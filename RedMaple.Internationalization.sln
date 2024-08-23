@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedMaple.Internationalization", "src\RedMaple.Internationalization.csproj", "{8CF47334-BEF4-4BF5-9CBC-8B4CCB072927}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedMaple.Internationalization.UnitTests", "tests\RedMaple.Internationalization.UnitTests\RedMaple.Internationalization.UnitTests.csproj", "{1CA43A20-4F44-4B85-8D05-63E194F3FA01}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CF47334-BEF4-4BF5-9CBC-8B4CCB072927}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CF47334-BEF4-4BF5-9CBC-8B4CCB072927}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CF47334-BEF4-4BF5-9CBC-8B4CCB072927}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CF47334-BEF4-4BF5-9CBC-8B4CCB072927}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CA43A20-4F44-4B85-8D05-63E194F3FA01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CA43A20-4F44-4B85-8D05-63E194F3FA01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CA43A20-4F44-4B85-8D05-63E194F3FA01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CA43A20-4F44-4B85-8D05-63E194F3FA01}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {16260DD2-2999-4CBA-BBCB-5ADB6F4E163C}
+	EndGlobalSection
+EndGlobal
