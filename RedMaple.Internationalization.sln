@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedMaple.Internationalizati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedMaple.Internationalization.UnitTests", "tests\RedMaple.Internationalization.UnitTests\RedMaple.Internationalization.UnitTests.csproj", "{1CA43A20-4F44-4B85-8D05-63E194F3FA01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleConsoleApp", "samples\SampleConsoleApp\SampleConsoleApp.csproj", "{1A0B31BC-12C0-41DD-A09F-4336130E1D25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1CA43A20-4F44-4B85-8D05-63E194F3FA01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1CA43A20-4F44-4B85-8D05-63E194F3FA01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CA43A20-4F44-4B85-8D05-63E194F3FA01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A0B31BC-12C0-41DD-A09F-4336130E1D25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A0B31BC-12C0-41DD-A09F-4336130E1D25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A0B31BC-12C0-41DD-A09F-4336130E1D25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A0B31BC-12C0-41DD-A09F-4336130E1D25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
