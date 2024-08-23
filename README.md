@@ -10,23 +10,23 @@ Parsing of language tags
 
 ````csharp
 
-if(LanguageTags.TryParse("en-US", out var language))
+if(LanguageTag.TryParse("en-US", out var language))
 {
 	Console.WriteLine(language.Formatted);
 }
 
-if(LanguageTags.TryParse("eng-US", out var language))
+if(LanguageTag.TryParse("eng-US", out var language))
 {
 	Console.WriteLine(language.FormattedText);
 }
 
-if(LanguageTags.TryParse("eng-Latn-US", out var language))
+if(LanguageTag.TryParse("eng-Latn-US", out var language))
 {
 	Console.WriteLine(language.Script.EnglishName);
 	Console.WriteLine(language.Locality.Region);
 }
 
-if(LanguageTags.TryParse("zh-cmn-Hans-CN", out var language))
+if(LanguageTag.TryParse("zh-cmn-Hans-CN", out var language))
 {
 	Console.WriteLine(language.FormattedText);
 
