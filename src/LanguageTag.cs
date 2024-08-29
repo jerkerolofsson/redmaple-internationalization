@@ -61,6 +61,11 @@
             /// Example: ISO3166 CHN=China, ISO639 CHN=Chinook jargon
             /// </summary>
             public bool Iso3166_Alpha3 { get; set; } = false;
+
+            /// <summary>
+            /// Allows extending with additional information
+            /// </summary>
+            public List<ITagParser> ExtendedParsers { get; set; } = new();
         }
 
         /// <summary>
@@ -281,6 +286,18 @@
                         if (Localities.TryGetByTwoLetterCode(tag, out var localityFromAlpha2))
                         {
                             languageTag.Locality = localityFromAlpha2;
+                        }
+                    }
+                }
+
+                if(!success && options.ExtendedParsers.Count > 0)
+                {
+                    foreach (var parser in options.ExtendedParsers)
+                    {
+                        if (parser.Parse(tag, languageTag))
+                        {
+                            success = true;
+                            break;
                         }
                     }
                 }
