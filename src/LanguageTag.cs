@@ -29,16 +29,6 @@
             public bool ReadIndividualLanguage { get; set; } = true;
 
             /// <summary>
-            /// Tries to parse a language tag as ISO639-2
-            /// </summary>
-            public bool Iso639_Alpha2 { get; set; } = true;
-
-            /// <summary>
-            /// Tries to parse a language tag as ISO639-3
-            /// </summary>
-            public bool Iso639_Alpha3 { get; set; } = true;
-
-            /// <summary>
             /// Tries to read the script
             /// </summary>
             public bool ReadScript { get; set; } = true;
@@ -47,6 +37,31 @@
             /// Tries to read country/region information
             /// </summary>
             public bool ReadLocality { get; set; } = true;
+
+            /// <summary>
+            /// Tries to read country/region information
+            /// </summary>
+            public bool ReadRegion { get; set; } = true;
+
+            /// <summary>
+            /// Tries to parse a language tag as ISO639 Part 1
+            /// </summary>
+            public bool Iso639_Alpha2 { get; set; } = true;
+
+            /// <summary>
+            /// Tries to parse a language tag as ISO639 Part2B
+            /// </summary>
+            public bool Iso639_Part2B { get; set; } = true;
+
+            /// <summary>
+            /// Tries to parse a language tag as ISO639 Part2T
+            /// </summary>
+            public bool Iso639_Part2T { get; set; } = true;
+
+            /// <summary>
+            /// Tries to parse a language tag as ISO639-3
+            /// </summary>
+            public bool Iso639_Alpha3 { get; set; } = true;
 
             /// <summary>
             /// Tries to parse a locality tag as ISO3166 alpha2
@@ -61,6 +76,18 @@
             /// Example: ISO3166 CHN=China, ISO639 CHN=Chinook jargon
             /// </summary>
             public bool Iso3166_Alpha3 { get; set; } = false;
+
+            /// <summary>
+            /// Tries to parse locality from a country code, for example
+            /// swe-752 (752 is the ISO-639 country code for Sweden)
+            /// </summary>
+            public bool Iso3166_CountryCode { get; set; } = false;
+
+            /// <summary>
+            /// Tries to parse locality from a country code, for example
+            /// es-419 (419 is the region code for the Latin America and Caribbean region)
+            /// </summary>
+            public bool Iso3166_RegionCode { get; set; } = true;
 
             /// <summary>
             /// Allows extending with additional information
@@ -83,6 +110,11 @@
         /// The country/region, e.g. US, GB
         /// </summary>
         public Locality? Locality { get; set; }
+
+        /// <summary>
+        /// Region / sub region information. If Locality is set it will be the same.
+        /// </summary>
+        public Region? Region { get; set; }
 
         /// <summary>
         /// Macro language (language group)
@@ -244,23 +276,28 @@
                 bool success = false;
                 if (options.ReadMacroLanguage &&
                     languageTag.MacroLanguage is null &&
-                    Languages.TryGetMacroLanguage(tag, out var macroLanguage))
+                    Languages.TryGetMacroLanguage(tag, options, out var macroLanguage))
                 {
                     languageTag.MacroLanguage = macroLanguage;
+                    success = true;
                 }
                 else if (options.ReadIndividualLanguage && options.Iso639_Alpha3 &&
                     tag.Length == 3 &&
                     languageTag.Language is null &&
-                    Languages.TryGetLanguageFromThreeLetterCode(tag, out var language))
+                    Languages.TryGetLanguageFromThreeLetterCode(tag, out var language) &&
+                    !language.IsMacroLanguage)
                 {
                     languageTag.Language = language;
+                    success = true;
                 }
                 else if (options.ReadIndividualLanguage && options.Iso639_Alpha2 &&
                     tag.Length == 2 &&
                     languageTag.Language is null &&
-                    Languages.TryGetLanguageFromTwoLetterCode(tag, out var language2))
+                    Languages.TryGetLanguageFromTwoLetterCode(tag, out var language2) &&
+                    !language2.IsMacroLanguage)
                 {
                     languageTag.Language = language2;
+                    success = true;
                 }
 
                 else if (options.ReadScript &&
@@ -268,6 +305,7 @@
                     Scripts.TryGetScript(tag, out var script))
                 {
                     languageTag.Script = script;
+                    success = true;
                 }
                 else if (options.ReadLocality &&
                     languageTag.Language is not null &&
@@ -279,6 +317,8 @@
                         if (Localities.TryGetByThreeLetterCode(tag, out var localityFromAlpha3))
                         {
                             languageTag.Locality = localityFromAlpha3;
+                            languageTag.Region = languageTag.Locality.Region;
+                            success = true;
                         }
                     }
                     if (tag.Length == 2 && options.Iso3166_Alpha2)
@@ -286,6 +326,27 @@
                         if (Localities.TryGetByTwoLetterCode(tag, out var localityFromAlpha2))
                         {
                             languageTag.Locality = localityFromAlpha2;
+                            languageTag.Region = languageTag.Locality.Region;
+                            success = true;
+                        }
+                    }
+                }
+                if(!success &&
+                    options.ReadRegion && 
+                    languageTag.Region is null &&
+                    IsOnlyDigits(tag))
+                {
+                    if(options.Iso3166_RegionCode && int.TryParse(tag, out var regionCode))
+                    {
+                        if (Localities.TryGetSubRegionByCode(regionCode, out Region? subRegion))
+                        {
+                            languageTag.Region = subRegion;
+                            success = true;
+                        }
+                        else if (Localities.TryGetRegionByCode(regionCode, out Region? region))
+                        {
+                            languageTag.Region = region;
+                            success = true;
                         }
                     }
                 }
@@ -308,6 +369,22 @@
                 }
             }
 
+            return true;
+        }
+
+        private static bool IsOnlyDigits(string tag)
+        {
+            if(tag.Length == 0)
+            {
+                return false;
+            }
+            foreach(char c in tag)
+            {
+                if(!Char.IsDigit(c))
+                {
+                    return false;
+                }
+            }
             return true;
         }
     }

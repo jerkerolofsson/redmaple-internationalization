@@ -16,10 +16,10 @@
         /// ISO 3166 three-letter code
         /// </summary>
         public required string Alpha3 { get; init; }
-        public required string Id { get; init; }
-        public string? IntermediateRegion { get; internal set; }
-        public string? SubRegion { get; internal set; }
-        public string? Region { get; internal set; }
-        public string? RegionId { get; internal set; }
+
+        /// <summary>
+        /// Region of the locality
+        /// </summary>
+        public Region? Region { get; set; }
     }
 }

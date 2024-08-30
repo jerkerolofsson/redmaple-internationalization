@@ -55,6 +55,7 @@ namespace RedMaple.Internationalization.UnitTests
         [Theory]
         [InlineData("zh", "Chinese")]
         [InlineData("zho", "Chinese")]
+        [InlineData("chi", "Chinese")] // 2B
         public void TryGetMacroLanguage_ReturnsTrueAndCorrectLanguage(string code, string expectedName)
         {
             var res = Languages.TryGetMacroLanguage(code, out var language);

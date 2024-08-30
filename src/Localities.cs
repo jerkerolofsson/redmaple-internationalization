@@ -148,13 +148,11 @@
                 Alpha2 = iso3166.alpha2,
                 Alpha3 = iso3166.alpha3,
                 Name = iso3166.name,
-                Region = iso3166.region,
-                SubRegion = iso3166.subregion,
-                IntermediateRegion = iso3166.intermediateregion,
-                Id = iso3166.name.ToLower().Replace(' ', '_').Replace('-', '_').Replace('Å', 'a'),
-                RegionId = iso3166.region switch
+                Region = new Region
                 {
-                    _ => iso3166.region?.ToLower()?.Replace(' ', '_')
+                    Name = iso3166.region,
+                    SubRegion = iso3166.subregion,
+                    IntermediateRegion = iso3166.intermediateregion,
                 }
             };
         }
@@ -165,11 +163,15 @@
         private static IReadOnlyList<string>? mRegions;
         private static FrozenDictionary<string, List<string>>? mRegionsToSubRegions;
         private static FrozenDictionary<string, List<Iso3166>>? mRegionsMap;
+        private static FrozenDictionary<int, Region>? mRegionCodeMap;
+        private static FrozenDictionary<int, Region>? mSubRegionCodeMap;
 
         [MemberNotNull(
             nameof(mAlpha2Map),
             nameof(mAlpha3Map),
             nameof(mRegionsMap),
+            nameof(mRegionCodeMap),
+            nameof(mSubRegionCodeMap),
             nameof(mRegionsToSubRegions),
             nameof(mRegions))]
         private static void EnsureInitialized()
@@ -192,10 +194,26 @@
                 var alpha3 = new Dictionary<string, Iso3166>();
                 var regions = new Dictionary<string, List<string>>();
                 var regionsMap = new Dictionary<string, List<Iso3166>>();
+                var regionCodeMap = new Dictionary<int, Region>();
+                var subRegionCodeMap = new Dictionary<int, Region>();
                 foreach (var item in items)
                 {
                     alpha2[item.alpha2] = item;
                     alpha3[item.alpha3] = item;
+
+                    if (!string.IsNullOrEmpty(item.region))
+                    {
+                        if (int.TryParse(item.regioncode, out int regionCode) && !regionCodeMap.ContainsKey(regionCode))
+                        {
+                            Region region = MapToRegion(item);
+                            regionCodeMap[regionCode] = region;
+                        }
+                        if (int.TryParse(item.subregioncode, out int subRegionCode) && !subRegionCodeMap.ContainsKey(subRegionCode))
+                        {
+                            Region region = MapToSubRegion(item);
+                            subRegionCodeMap[subRegionCode] = region;
+                        }
+                    }
 
                     if (!string.IsNullOrEmpty(item.region))
                     {
@@ -217,7 +235,59 @@
                 mRegions = regions.Keys.ToList();
                 mRegionsToSubRegions = regions.ToFrozenDictionary();
                 mRegionsMap = regionsMap.ToFrozenDictionary();
+                mRegionCodeMap = regionCodeMap.ToFrozenDictionary();
+                mSubRegionCodeMap = subRegionCodeMap.ToFrozenDictionary();
             }
+        }
+
+        private static Region MapToRegion(Iso3166 item)
+        {
+            return new Region
+            {
+                Name = item.region
+            };
+        }
+        private static Region MapToSubRegion(Iso3166 item)
+        {
+            return new Region
+            {
+                Name = item.region,
+                SubRegion = item.subregion
+            };
+        }
+
+        /// <summary>
+        /// Gets a region by it's code
+        /// </summary>
+        /// <param name="regionCode"></param>
+        /// <param name="region"></param>
+        /// <returns>true if success</returns>
+        public static bool TryGetRegionByCode(int regionCode, [NotNullWhen(true)] out Region? region)
+        {
+            EnsureInitialized();
+            if (mRegionCodeMap.TryGetValue(regionCode, out region))
+            {
+                return true;
+            }
+            region = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets a subregion by it's code
+        /// </summary>
+        /// <param name="subRegionCode"></param>
+        /// <param name="region"></param>
+        /// <returns>true if success</returns>
+        public static bool TryGetSubRegionByCode(int subRegionCode, [NotNullWhen(true)] out Region? region)
+        {
+            EnsureInitialized();
+            if (mSubRegionCodeMap.TryGetValue(subRegionCode, out region))
+            {
+                return true;
+            }
+            region = null;
+            return false;
         }
         #endregion
     }

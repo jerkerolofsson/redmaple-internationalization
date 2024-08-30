@@ -26,6 +26,16 @@ namespace RedMaple.Internationalization
         private static FrozenDictionary<string, Iso639>? mIso639_3;
 
         /// <summary>
+        /// ISO 639 models with the Part2B code as key
+        /// </summary>
+        private static FrozenDictionary<string, Iso639>? mIso639_2b;
+
+        /// <summary>
+        /// ISO 639 models with the Part2t code as key
+        /// </summary>
+        private static FrozenDictionary<string, Iso639>? mIso639_2t;
+
+        /// <summary>
         /// ISO 639 models with the alpha-2 code as key
         /// </summary>
         private static FrozenDictionary<string, Iso639>? mIso639_2;
@@ -43,12 +53,33 @@ namespace RedMaple.Internationalization
         }
 
         /// <summary>
-        /// Tries to get a macro language from the iso code (alpha-3 or alpha-2)
+        /// Tries to get a macro language from the iso code 
         /// </summary>
         /// <param name="iso639Code"></param>
         /// <param name="macroLanguage"></param>
         /// <returns></returns>
         public static bool TryGetMacroLanguage(string iso639Code, [NotNullWhen(true)] out MacroLanguage? macroLanguage)
+        {
+            var options = new LanguageTag.Options
+            {
+                Iso639_Alpha3 = true,
+                Iso3166_Alpha2 = true,
+                Iso639_Part2B = true,
+                Iso639_Part2T = true
+            };
+            return TryGetMacroLanguage(iso639Code, options, out macroLanguage);
+        }
+
+        /// <summary>
+        /// Tries to get a macro language based on the options defined
+        /// </summary>
+        /// <param name="iso639Code"></param>
+        /// <param name="options">Options that define allowed standards</param>
+        /// <param name="macroLanguage"></param>
+        /// <returns></returns>
+        public static bool TryGetMacroLanguage(string iso639Code,
+            LanguageTag.Options options,
+            [NotNullWhen(true)] out MacroLanguage? macroLanguage)
         {
             ArgumentNullException.ThrowIfNull(iso639Code);
 
@@ -66,7 +97,7 @@ namespace RedMaple.Internationalization
             // we don't have a lookup table here so first try to get the language from the 
             // mIso639_2 cache which contains the complete language entity and then use the Id
             // which is the alpha-3 code to check the macro-language dictionary
-            if (iso639Code.Length == 2)
+            if (iso639Code.Length == 2 && options.Iso639_Alpha2)
             {
                 InitializeMacroLanguages();
                 InitializeIso639_3();
@@ -75,6 +106,52 @@ namespace RedMaple.Internationalization
                     if (mIso639MacroLanguages.TryGetValue(language.Id.ToLower(), out macroLanguage))
                     {
                         return true;
+                    }
+                }
+            }
+
+            // Check other alternatives such as part2b
+            if (iso639Code.Length == 3)
+            {
+                InitializeMacroLanguages();
+                InitializeIso639_3();
+                if (options.Iso639_Alpha3)
+                {
+                    if (mIso639_3.TryGetValue(iso639Code, out var language))
+                    {
+                        if (language.Scope == "M")
+                        {
+                            if (mIso639MacroLanguages.TryGetValue(language.Id.ToLower(), out macroLanguage))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                if (options.Iso639_Part2T)
+                {
+                    if (mIso639_2t.TryGetValue(iso639Code, out var language))
+                    {
+                        if (language.Scope == "M")
+                        {
+                            if (mIso639MacroLanguages.TryGetValue(language.Id.ToLower(), out macroLanguage))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                if (options.Iso639_Part2B)
+                {
+                    if (mIso639_2b.TryGetValue(iso639Code, out var language))
+                    {
+                        if (language.Scope == "M")
+                        {
+                            if (mIso639MacroLanguages.TryGetValue(language.Id.ToLower(), out macroLanguage))
+                            {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
@@ -150,10 +227,10 @@ namespace RedMaple.Internationalization
         }
 
         #region Caching
-        [MemberNotNull(nameof(mIso639_3), nameof(mIso639_2))]
+        [MemberNotNull(nameof(mIso639_3), nameof(mIso639_2), nameof(mIso639_2b), nameof(mIso639_2t))]
         private static void InitializeIso639_3()
         {
-            if (mIso639_3 is null || mIso639_2 is null)
+            if (mIso639_3 is null || mIso639_2 is null || mIso639_2t is null || mIso639_2b is null)
             {
                 using var jsonStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("RedMaple.Internationalization.Data.iso-639-3.json");
                 if (jsonStream is null)
@@ -169,16 +246,28 @@ namespace RedMaple.Internationalization
 
                 var alpha2 = new Dictionary<string, Iso639>();
                 var alpha3 = new Dictionary<string, Iso639>();
+                var alpha2t = new Dictionary<string, Iso639>();
+                var alpha2b = new Dictionary<string, Iso639>();
                 foreach (var item in items)
                 {
                     if (item.Part1 is not null)
                     {
                         alpha2[item.Part1] = item;
                     }
+                    if (item.Part2B is not null)
+                    {
+                        alpha2b[item.Part2B] = item;
+                    }
+                    if (item.Part2T is not null)
+                    {
+                        alpha2t[item.Part2T] = item;
+                    }
                     alpha3[item.Id] = item;
                 }
                 mIso639_2 = alpha2.ToFrozenDictionary();
                 mIso639_3 = alpha3.ToFrozenDictionary();
+                mIso639_2t = alpha2t.ToFrozenDictionary();
+                mIso639_2b = alpha2b.ToFrozenDictionary();
             }
         }
 

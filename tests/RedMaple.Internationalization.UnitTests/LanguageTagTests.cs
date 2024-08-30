@@ -29,5 +29,24 @@ namespace RedMaple.Internationalization.UnitTests
             Assert.Equal(expectedScript,        languageTag?.Script?.EnglishName);
             Assert.Equal(expectedLocality,      languageTag?.Locality?.Name);
         }
+
+        [Theory]
+        [InlineData("es-419", "Spanish", "Americas", "Latin America and the Caribbean")]
+        public void TryParse_WithRegionCode(
+           string tag,
+           string? expectedLanguage,
+           string? expectedRegionName,
+           string? expectedSubRegionName)
+        {
+            var res = LanguageTag.TryParse(tag, out var languageTag);
+            Assert.True(res, $"Expected '{tag}' to return true");
+            Assert.NotNull(languageTag);
+            Assert.NotNull(languageTag.Language);
+            Assert.NotNull(languageTag.Region);
+
+            Assert.Equal(expectedLanguage, languageTag?.Language?.RefName);
+            Assert.Equal(expectedRegionName, languageTag?.Region?.Name);
+            Assert.Equal(expectedSubRegionName, languageTag?.Region?.SubRegion);
+        }
     }
 }
