@@ -14,7 +14,7 @@
 		<Description>Parsing of language tags (ISO-639), localities (ISO-3166), and scripts (ISO-15924)</Description>
 		<PackageTags>i18n,internationalization,language tags</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 		<PackageProjectUrl>https://github.com/jerkerolofsson/redmaple-internationalization</PackageProjectUrl>
 	</PropertyGroup>
 

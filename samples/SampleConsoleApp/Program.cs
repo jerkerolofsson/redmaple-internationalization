@@ -36,6 +36,6 @@ if (LanguageTag.TryParse("zh-cmn-Hans-CN", out var language))
     Console.WriteLine(language.Locality.Name);
     Console.WriteLine(language.Locality.Alpha2);
     Console.WriteLine(language.Locality.Alpha3);
-    Console.WriteLine(language.Locality.Region);
-    Console.WriteLine(language.Locality.SubRegion);
+    Console.WriteLine(language.Locality.Region.Name);
+    Console.WriteLine(language.Locality.Region.SubRegion);
 }
